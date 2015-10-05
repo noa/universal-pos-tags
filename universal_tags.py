@@ -1,12 +1,12 @@
 '''
-Interface for converting POS tags from various treebanks 
+Interface for converting POS tags from various treebanks
 to the universal tagset of Petrov, Das, & McDonald.
 
 The tagset consists of the following 12 coarse tags:
 
 VERB - verbs (all tenses and modes)
 NOUN - nouns (common and proper)
-PRON - pronouns 
+PRON - pronouns
 ADJ - adjectives
 ADV - adverbs
 ADP - adpositions (prepositions and postpositions)
@@ -25,12 +25,12 @@ X - other: foreign words, typos, abbreviations
 
 # Strive towards Python 3 compatibility
 from __future__ import print_function, unicode_literals, division
-from future_builtins import map, filter
+#from future_builtins import map, filter
 
 import re, glob
 from collections import defaultdict
 
-MAP_DIR = 'universal_pos_tags.1.01'
+MAP_DIR = '.'
 
 COARSE_TAGS = ('VERB','NOUN','PRON','ADJ','ADV','ADP','CONJ','DET','NUM','PRT','X','.')
 
@@ -42,15 +42,15 @@ def readme():
 
 def fileids(lang=''):
     '''
-    Optionally given a two-letter ISO language code, returns names of files 
-    containing mappings from a tagset from a treebank in that language to the 
+    Optionally given a two-letter ISO language code, returns names of files
+    containing mappings from a tagset from a treebank in that language to the
     universal tagset.
-    
+
     >>> fileids('en')
     [u'en-ptb']
     >>> fileids('zh')
     [u'zh-ctb6', u'zh-sinica']
-    ''' 
+    '''
     return [re.match(r'.*[/]([^/\\]+)[.]map', p).group(1) for p in glob.glob(MAP_DIR + '/{}-*.map'.format(lang.lower()))]
 
 def _read(fileid):
@@ -62,12 +62,12 @@ def _read(fileid):
             assert coarse in COARSE_TAGS,'Unexpected coarse tag: {}'.format(coarse)
             assert fine not in _MAPS[fileid],'Multiple entries for original tag: {}'.format(fine)
             _MAPS[fileid][fine] = coarse
-            
+
 def mapping(fileid):
     '''
-    Retrieves the mapping from original tags to universal tags for the 
+    Retrieves the mapping from original tags to universal tags for the
     treebank in question.
-    
+
     >>> mapping('ru-rnc')=={'!': '.', 'A': 'ADJ', 'AD': 'ADV', 'C': 'CONJ', 'COMP': 'CONJ', 'IJ': 'X', 'NC': 'NUM', 'NN': 'NOUN', 'P': 'PRON', 'PTCL': 'PRT', 'V': 'VERB', 'VG': 'VERB', 'VI': 'VERB', 'VP': 'VERB', 'YES_NO_SENT': 'X', 'Z': 'X'}
     True
     '''
@@ -77,9 +77,9 @@ def mapping(fileid):
 
 def convert(fileid, originalTag):
     '''
-    Produces the (coarse) universal tag given an original POS tag from the 
+    Produces the (coarse) universal tag given an original POS tag from the
     treebank in question.
-    
+
     >>> convert('en-ptb', 'VBZ')
     u'VERB'
     >>> convert('en-ptb', 'VBP')
